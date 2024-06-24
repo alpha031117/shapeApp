@@ -1,0 +1,69 @@
+{% extends "adminPortal/base.html" %}
+{% load crispy_forms_tags %}
+
+{% block breadcrumb %}
+    <li class="nav-item">
+        <a class="nav-link" aria-current="page" href="{% url 'adminPortal:admin_home' %}">Admin Dashboard</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link active" aria-current="page" href="{% url 'adminPortal:shape_form' %}">New Shape</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" href="{% url 'userPortal:user_home' %}" target="_blank">User Site</a>
+    </li>
+{% endblock breadcrumb %} 
+
+{% block content %}
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header text-center">
+                        <h4>Shape's Information</h4>
+                    </div>
+                    <div class="card-body">
+                        <form id="shapeForm" method="POST" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            {{ form|crispy }}
+                            <button type="submit" class="btn btn-primary mt-3">Submit</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function() {
+            $('#shapeForm').on('submit', function(event) {
+                event.preventDefault(); // Prevent the default form submission
+
+                var formData = new FormData(this); // Create FormData object from the form
+                var url = window.location.pathname; // Current URL
+                var shapeId = url.split('/')[3]; // Extract shape ID from URL (if needed)
+
+                // AJAX request
+                $.ajax({
+                    url: shapeId ? `/administrator/api/shape/${shapeId}/edit/` : `{% url 'adminPortal:shape_create' %}`,
+                    type: shapeId ? 'PUT' : 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,  // Ensure this is false for FormData
+                    headers: {
+                        'X-CSRFToken': '{{ csrf_token }}'
+                    },
+                    success: function(response) {
+                        console.log(response);
+                        alert('Shape ' + (shapeId ? 'updated' : 'created') + ' successfully!');
+                        window.location.href = "{% url 'adminPortal:admin_home' %}";
+                    },
+                    error: function(xhr, status, error) {
+                        console.error(xhr.responseText);
+                        alert('An error occurred. Please try again.');
+                    }
+                });
+            });
+        });
+    </script>
+    
+{% endblock content %}

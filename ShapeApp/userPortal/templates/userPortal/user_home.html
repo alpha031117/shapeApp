@@ -1,0 +1,49 @@
+{% extends "adminPortal/base.html" %} 
+
+{% block content %}
+    <div class="container mt5">
+        <div class="alert alert-primary alert-dismissible fade show" role="alert">
+            <h4 class="alert-heading">Welcome to User Dashboard</h4>
+            <p>Here you can view the details of shapes.</p>
+            <hr>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    </div>
+
+    <div class="container mt-5">
+        <table id="shapeTable" class="table table-striped" style="width:100%">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Shape Type</th>
+                    <th>Shape Color</th>
+                    <th>Shape Size</th>
+                    <th>Created At</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for shape in shapes %}
+                    <tr>
+                        <td>{{ shape.name }}</td>
+                        <td>{{ shape.shape }}</td>
+                        <td>{{ shape.color }}</td>
+                        <td>
+                            {% if shape.shape_image %}
+                                <img src="{{ shape.shape_image }}" alt="{{ shape.shape }}" style="max-width: 100px; max-height: 100px;">
+                            {% else %}
+                                No Image
+                            {% endif %}
+                        </td> 
+                        <td>{{ shape.created_at }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        $(document).ready(function() {
+            $('#shapeTable').DataTable();
+        });
+    </script>
+{% endblock content %}
